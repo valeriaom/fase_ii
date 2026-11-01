@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portabilidad de nómina | MVP académico</title>
+<style>
+body{font:16px system-ui,Arial,sans-serif;background:#f3f6fa;color:#14253c;margin:0;padding:36px}
+main{max-width:720px;margin:auto;background:white;padding:30px;border-radius:16px;box-shadow:0 5px 25px #16243b15}
+h1{font-size:27px;margin:0 0 10px}p{line-height:1.55;color:#475569}
+form{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+label{font-size:14px;font-weight:600}input{display:block;box-sizing:border-box;padding:12px;width:100%;margin-top:5px;border:1px solid #cbd5e1;border-radius:8px}
+button{grid-column:1/-1;background:#164d87;color:#fff;font-size:16px;border:0;border-radius:8px;padding:13px;cursor:pointer}
+#result{background:#edf3f9;border-radius:10px;padding:20px;margin-top:18px;display:none}
+small{color:#64748b}@media(max-width:560px){form{grid-template-columns:1fr}body{padding:15px}}
+</style></head><body><main>
+<h1>Riesgo sintético de portabilidad de nómina</h1>
+<p>Prototipo académico para demostrar inferencia mediante API. No utiliza datos reales ni debe emplearse para decisiones sobre clientes.</p>
+<form id="prediction">
+<label>Antigüedad (meses)<input name="antiguedad_meses" type="number" min="0" max="180" value="48" required></label>
+<label>Saldo promedio<input name="saldo_promedio" type="number" min="0" max="1000000" step="any" value="32000" required></label>
+<label>Variación de dispersión (-1 a 1)<input name="variacion_dispersion" type="number" min="-1" max="1" step="any" value="-0.15" required></label>
+<label>Número de productos<input name="num_productos" type="number" min="1" max="15" value="4" required></label>
+<label>Actividad reciente (0 o 1)<input name="actividad_reciente" type="number" min="0" max="1" value="1" required></label>
+<button type="submit">Evaluar escenario</button>
+</form>
+<section id="result" aria-live="polite"></section>
+<p><small>Las probabilidades reflejan relaciones artificiales. Revisión humana obligatoria ante cualquier uso exploratorio.</small></p>
+</main><script>
+document.querySelector('#prediction').addEventListener('submit',async(e)=>{
+ e.preventDefault();const form=new FormData(e.target),payload={};
+ for(const [k,v] of form)payload[k]=Number(v);
+ const box=document.querySelector('#result');box.style.display='block';box.textContent='Procesando...';
+ try{const r=await fetch('/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+ const d=await r.json();if(!r.ok)throw Error(JSON.stringify(d.detail));
+ box.textContent='Probabilidad sintética: '+(d.probabilidad_salida*100).toFixed(2)+' % | Riesgo: '+d.nivel_riesgo+' | '+d.aviso;
+ }catch(err){box.textContent='Error: '+err.message}
+});
+</script></body></html>
