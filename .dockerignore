@@ -1,0 +1,11 @@
+.git
+.github
+.ipynb_checkpoints
+**/__pycache__
+.pytest_cache
+notebooks
+tests
+training
+*.zip
+*.csv
+.env*
