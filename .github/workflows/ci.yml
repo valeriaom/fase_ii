@@ -1,0 +1,16 @@
+name: Integracion continua
+on: [push, pull_request]
+jobs:
+  tests-and-container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+      - name: Validar API y modelo
+        run: python -m pytest -q
+      - name: Construir imagen Docker
+        run: docker build -t portabilidad-demo:ci .
